@@ -58,6 +58,15 @@ vector3 vector3 :: operator * ( const double& value )
     return Vecter ;
 }
 
+vector3 vector3 :: operator / ( const double& value )
+{
+    vector3 Vecter ;
+    Vecter.x = x / value ;
+    Vecter.y = y / value ;
+    Vecter.z = z / value ;
+    return Vecter ;
+}
+
 void  vector3 :: Rotate( double alpha , vector3 dir )
 {
     dir.normalize() ;

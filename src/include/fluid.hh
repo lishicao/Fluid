@@ -1,18 +1,35 @@
-#ifndef SPACE_HH_INCLUDED
-#define SPACE_HH_INCLUDED
+#ifndef FLUID_HH_INCLUDED
+#define FLUID_HH_INCLUDED
 
 #include <vector>
+#include "particle.hh"
+#include "face.hh"
 
-class space
+using namespace std ;
+
+class fluid
 {
 	public :
 		vector < particle > particles ;
-		vector < mesh > objects ;
-	private :
-		bool  stopflag ;
+		vector < face > objects ;
+        vector < face > surface ;
+
+        vector3 field_force ;
+
+        double  time , time_step ;
+        int     FPS ;
+
 	public :
-		void  run() ;
-		void  stop() ;
-}
+        fluid() ;
+		void     next_frame() ;
+    private :
+        void     next_moment() ;
+        void     surface_reconstruct() ;
+        vector3  get_acceleration( const particle& ) ;
+        vector3  get_pressure( const particle& ) ;
+        vector3  get_tension( const particle& ) ;
+        vector3  get_viscosity( const particle& ) ;
+        vector3  get_external_force( const particle& ) ;
+} ;
 
 #endif
