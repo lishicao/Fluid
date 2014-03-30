@@ -16,7 +16,7 @@ class fluid
 
         vector3 field_force ;
 
-        double  time , time_step ;
+        double  time , time_step , h ;
         int     FPS ;
 
 	public :
@@ -25,6 +25,8 @@ class fluid
     private :
         void     next_moment() ;
         void     surface_reconstruct() ;
+        double   get_distance( const particle& , const particle& ) ;
+        double   get_density( particle& ) ;
         vector3  get_acceleration( const particle& ) ;
         vector3  get_pressure( const particle& ) ;
         vector3  get_tension( const particle& ) ;

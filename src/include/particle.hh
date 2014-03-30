@@ -7,7 +7,7 @@ class particle
 {
 	public :
 		vector3 position , velocity ;
-		double  mass  ;
+		double  mass , density ;
     public :
         particle() ;
         particle( vector3 Position , vector3 Velocity ) ;

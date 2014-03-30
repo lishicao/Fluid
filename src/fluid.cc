@@ -1,5 +1,6 @@
 #include "fluid.hh"
 #include <iostream>
+#include <math.h>
 using namespace std ;
 
 fluid :: fluid()
@@ -7,6 +8,7 @@ fluid :: fluid()
     FPS = 24 ;
     time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
+    h = 1 ;
 }
 
 void  fluid :: next_frame()
@@ -19,12 +21,41 @@ void  fluid :: next_frame()
 
 void  fluid :: next_moment()
 {
+    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++iter )
+    {
+        (*iter).density = get_density( *iter ) ;
+    }
+
     for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).position = (*iter).position + (*iter).velocity * time_step ;
         (*iter).velocity = (*iter).velocity + get_acceleration( *iter ) * time_step ;
     }
     time += time_step ;
+}
+
+double  fluid :: get_distance( const particle& a , const particle& b )
+{
+    double dis ;
+    dis =  ( a.position.x - b.position.x ) * ( a.position.x - b.position.x )
+          +( a.position.y - b.position.y ) * ( a.position.y - b.position.y )
+          +( a.position.z - b.position.z ) * ( a.position.z - b.position.z ) ;
+    dis = sqrt( dis ) ;
+    return dis ;
+}
+
+double  fluid :: get_density( particle& P )
+{
+    double density = 0 ;
+    double W ;
+    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++iter )
+    {
+        double r = get_distance( P , *iter ) ;
+        if( r > h ) W = 0 ;
+        else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * 3.14159 * pow( h , 9 ) ) ;
+        density += (*iter).mass * W  ;
+    }
+    return density ;
 }
 
 vector3 fluid :: get_acceleration( const particle& P )
