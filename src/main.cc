@@ -7,6 +7,7 @@ int  main()
 {
     fluid Fluid ;
     particle temp ;
+
     Fluid.field_force.x = 0 ; Fluid.field_force.y = -10 ; Fluid.field_force.z = 0 ;
     for( int i = 0 ; i < 10 ; i ++ )
         for( int j = 0 ; j < 10 ; j ++ )

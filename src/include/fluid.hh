@@ -10,13 +10,14 @@ using namespace std ;
 class fluid
 {
 	public :
-		vector < particle > particles ;
-		vector < face > objects ;
-        vector < face > surface ;
+		vector < particle > particles ;		// particles are particle in fluid
+		vector < face > objects ;			// objects are mesh of solid
+        vector < face > surface ;			// surface is mesh of fluid
 
         vector3 field_force ;
 
-        double  time , time_step , h ;
+        double  time , time_step , h , u ;  // h is randius of kernel
+        double  u , k ; 					// u is viscosity friction , k is surface tension friction
         int     FPS ;
 
 	public :

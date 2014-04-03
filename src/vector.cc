@@ -31,6 +31,12 @@ vector3 vector3 :: operator + ( const vector3& rhs )
     return Vector ;
 }
 
+vector3& vector3 :: operator += ( const vector3& rhs )
+{
+	x += rhs.x ; y += rhs.y ; z += rhs.z ;
+	return *this ;
+}
+
 vector3 vector3 :: operator - ( const vector3& rhs )
 {
     vector3 Vector ;
@@ -38,6 +44,12 @@ vector3 vector3 :: operator - ( const vector3& rhs )
     Vector.y = y - rhs.y ;
     Vector.z = z - rhs.z ;
     return Vector ;
+}
+
+vector3& vector3 :: operator -= ( const vector3& rhs )
+{
+	x -= rhs.x ; y -= rhs.y ; z -= rhs.z ;
+	return *this ;
 }
 
 vector3 vector3 :: operator * ( const vector3& rhs )

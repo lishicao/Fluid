@@ -16,6 +16,8 @@ class vector3
         vector3 operator* ( const vector3& ) ;
         vector3 operator* ( const double& ) ;
         vector3 operator/ ( const double& ) ;
+        vector3& operator+= ( const vector3& ) ;
+        vector3& operator-= ( const vector3& ) ;
         void Rotate( double , vector3 ) ;
         double dot( const vector3& ) ;
 } ;
