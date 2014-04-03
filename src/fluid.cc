@@ -75,8 +75,20 @@ vector3 fluid :: get_pressure( const particle& P )
 {
 }
 
+/*
+something todo
+*/
+
 vector3 fluid :: get_tension( const particle& P )
 {
+	vector3 tension( 0 , 0 , 0 ) ;
+	double r , W ;
+	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+	{
+		r = get_distance( P , *iter ) ;
+		if( r > h ) W = 0 ;
+		else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * 3.14159 * pow( h , 9 ) ) ;
+	}
 }
 
 vector3 fluid :: get_viscosity( const particle& P )
@@ -87,7 +99,7 @@ vector3 fluid :: get_viscosity( const particle& P )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) W = 0 ;
-		else W = 45 * ( h - r ) / ( 3.14159 * pow( h , 6 ) ) ;
+		else 		W = 45 * ( h - r ) / ( 3.14159 * pow( h , 6 ) ) ;
 		viscosity = viscosity + ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
 	}
 	return viscosity ;
