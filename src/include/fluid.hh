@@ -16,7 +16,7 @@ class fluid
 
         vector3 field_force ;
 
-        double  time , time_step , h , u ;  // h is randius of kernel
+        double  time , time_step , h  ;     // h is randius of kernel
         double  u , k ; 					// u is viscosity friction , k is surface tension friction
         int     FPS ;
 

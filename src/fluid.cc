@@ -3,6 +3,8 @@
 #include <math.h>
 using namespace std ;
 
+const double PI = 3.1415926 ;
+
 fluid :: fluid()
 {
     FPS = 24 ;
@@ -52,7 +54,7 @@ double  fluid :: get_density( particle& P )
     {
         double r = get_distance( P , *iter ) ;
         if( r > h ) W = 0 ;
-        else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * 3.14159 * pow( h , 9 ) ) ;
+        else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * PI * pow( h , 9 ) ) ;
         density += (*iter).mass * W  ;
     }
     return density ;
@@ -82,13 +84,17 @@ something todo
 vector3 fluid :: get_tension( const particle& P )
 {
 	vector3 tension( 0 , 0 , 0 ) ;
-	double r , W ;
+	vector3 Force ;
+	double r ;
 	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
 	{
 		r = get_distance( P , *iter ) ;
-		if( r > h ) W = 0 ;
-		else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * 3.14159 * pow( h , 9 ) ) ;
+		if( r > h ) continue ;
+
+        Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
+        tension = tension + Force ;
 	}
+	return tension ;
 }
 
 vector3 fluid :: get_viscosity( const particle& P )
@@ -99,7 +105,7 @@ vector3 fluid :: get_viscosity( const particle& P )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) W = 0 ;
-		else 		W = 45 * ( h - r ) / ( 3.14159 * pow( h , 6 ) ) ;
+		else 		W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
 		viscosity = viscosity + ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
 	}
 	return viscosity ;
