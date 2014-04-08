@@ -5,6 +5,8 @@ using namespace std ;
 
 const double PI = 3.1415926 ;
 
+
+
 fluid :: fluid()
 {
     FPS = 24 ;
@@ -13,12 +15,15 @@ fluid :: fluid()
     h = 1 ;
 }
 
+
+
 void  fluid :: next_frame()
 {
     for( int i = 0 ; i < 50 ; i ++ )
         next_moment() ;
     surface_reconstruct() ;
 }
+
 
 
 void  fluid :: next_moment()
@@ -36,6 +41,8 @@ void  fluid :: next_moment()
     time += time_step ;
 }
 
+
+
 double  fluid :: get_distance( const particle& a , const particle& b )
 {
     double dis ;
@@ -45,6 +52,8 @@ double  fluid :: get_distance( const particle& a , const particle& b )
     dis = sqrt( dis ) ;
     return dis ;
 }
+
+
 
 double  fluid :: get_density( particle& P )
 {
@@ -60,6 +69,8 @@ double  fluid :: get_density( particle& P )
     return density ;
 }
 
+
+
 vector3 fluid :: get_acceleration( const particle& P )
 {
     vector3 net_force , pressure , tension , viscosity , external_force ;
@@ -73,9 +84,13 @@ vector3 fluid :: get_acceleration( const particle& P )
     return ( net_force / P.mass ) ;
 }
 
+
+
 vector3 fluid :: get_pressure( const particle& P )
 {
 }
+
+
 
 vector3 fluid :: get_tension( const particle& P )
 {
@@ -93,6 +108,8 @@ vector3 fluid :: get_tension( const particle& P )
 	return tension ;
 }
 
+
+
 vector3 fluid :: get_viscosity( const particle& P )
 {
 	vector3 viscosity( 0 , 0 , 0 ) ;
@@ -107,9 +124,23 @@ vector3 fluid :: get_viscosity( const particle& P )
 	return viscosity ;
 }
 
+
+/*someting todo*/
 vector3 fluid :: get_external_force( const particle& P )
 {
+    vector3 external_force( 0 , 0 , 0 ) ;
+    vector3 Normal ;
+    double  r ;
+    for( vector<face> :: iterator iter = objects.begin() ; iter != objects.end() ; iter ++ )
+    {
+        r = (*iter).get_distance( P ) ;
+        if( r > h ) continue ;
+        Normal = (*iter).get_normal() ;
+    }
+    return external_force ;
 }
+
+
 
 void  fluid :: surface_reconstruct()
 {

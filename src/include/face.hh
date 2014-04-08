@@ -11,7 +11,8 @@ class face
     public :
         face() ;
         face( vector3 , vector3 , vector3 ) ;
-        double get_distance( const particle& ) ;
+        double  get_distance( const particle& ) ;
+        vector3 get_normal() ;
 } ;
 
 #endif

@@ -28,3 +28,12 @@ double face :: get_distance( const particle& P )
     distance = fabs( COS ) * length ;
     return distance ;
 }
+
+vector3 face :: get_normal()
+{
+    vector3 Normal , A , B ;
+    A = point2 - point1 ;
+    B = point3 - point1 ;
+    Normal = A.cross( B ) ;
+    return Normal ;
+}
