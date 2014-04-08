@@ -103,3 +103,17 @@ double vector3 :: dot( const vector3& V )
     return result ;
 }
 
+vector3 vector3 :: cross( const vector3& V )
+{
+    vector3 result ;
+    result.x = y * V.z - z * V.y ;
+    result.y = z * V.x - x * V.z ;
+    result.z = x * V.y - y * V.x  ;
+    return result ;
+}
+
+double  vector3 :: length()
+{
+    double length = sqrt( x * x + y * y + z * z ) ;
+    return length ;
+}

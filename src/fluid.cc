@@ -77,10 +77,6 @@ vector3 fluid :: get_pressure( const particle& P )
 {
 }
 
-/*
-something todo
-*/
-
 vector3 fluid :: get_tension( const particle& P )
 {
 	vector3 tension( 0 , 0 , 0 ) ;

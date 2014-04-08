@@ -1,6 +1,7 @@
 #ifndef FACE_HH_INCLUDED
 #define FACE_HH_INCLUDED
 
+#include "particle.hh"
 #include "vector.hh"
 
 class face
@@ -10,6 +11,7 @@ class face
     public :
         face() ;
         face( vector3 , vector3 , vector3 ) ;
+        double get_distance( const particle& ) ;
 } ;
 
 #endif

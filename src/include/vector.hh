@@ -20,6 +20,8 @@ class vector3
         vector3& operator-= ( const vector3& ) ;
         void Rotate( double , vector3 ) ;
         double dot( const vector3& ) ;
+        double length() ;
+        vector3 cross( const vector3& ) ;
 } ;
 
 #endif

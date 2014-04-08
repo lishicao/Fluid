@@ -25,5 +25,6 @@ int  main()
             vector<particle>::iterator iter = Fluid.particles.begin() ;
             cout << (*iter).position.x << " " << (*iter).position.y << " " << (*iter).position.z << endl ;
         }
+
 	return 0 ;
 }
