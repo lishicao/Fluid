@@ -9,19 +9,19 @@ class vector3
     public :
         vector3( double , double , double ) ;
         vector3() {} ;
-        void  normalize() ;
+        void     normalize() ;
         vector3& operator= ( const vector3& rhs ) ;
-        vector3 operator+ ( const vector3& ) ;
-        vector3 operator- ( const vector3& ) ;
-        vector3 operator* ( const vector3& ) ;
-        vector3 operator* ( const double& ) ;
-        vector3 operator/ ( const double& ) ;
+        vector3  operator+ ( const vector3& ) ;
+        vector3  operator- ( const vector3& ) ;
+        vector3  operator* ( const vector3& ) ;
+        vector3  operator* ( const double& ) ;
+        vector3  operator/ ( const double& ) ;
         vector3& operator+= ( const vector3& ) ;
         vector3& operator-= ( const vector3& ) ;
-        void Rotate( double , vector3 ) ;
-        double dot( const vector3& ) ;
-        double length() ;
-        vector3 cross( const vector3& ) ;
+        void     Rotate( double , vector3 ) ;
+        double   dot( const vector3& ) ;
+        double   length() ;
+        vector3  cross( const vector3& ) ;
 } ;
 
 #endif

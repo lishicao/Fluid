@@ -37,3 +37,11 @@ vector3 face :: get_normal()
     Normal = A.cross( B ) ;
     return Normal ;
 }
+
+void  face :: get_equation()
+{
+    a = ( (point2.y-point1.y)*(point3.z-point1.z)-(point2.z-point1.z)*(point3.y-point1.y) );
+    b = ( (point2.z-point1.z)*(point3.x-point1.x)-(point2.x-point1.x)*(point3.z-point1.z) );
+    c = ( (point2.x-point1.x)*(point3.y-point1.y)-(point2.y-point1.y)*(point3.x-point1.x) );
+    d = ( 0-(a*point1.x+b*point1.y+c*point1.z) );
+}
