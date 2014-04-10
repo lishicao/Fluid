@@ -17,7 +17,8 @@ class fluid
         vector3 field_force ;
 
         double  time , time_step , h  ;     // h is randius of kernel
-        double  u , k ; 					// u is viscosity friction , k is surface tension friction
+        double  u , k , B ; 				// u is viscosity friction , k is surface tension friction , B is pressure friction
+        double  stable_density ;
         int     FPS ;
 
 	public :
@@ -32,7 +33,7 @@ class fluid
         vector3  get_pressure( const particle& ) ;
         vector3  get_tension( const particle& ) ;
         vector3  get_viscosity( const particle& ) ;
-        vector3  get_external_force( const particle& ) ;
+        vector3  get_external_force( particle ) ;
 } ;
 
 #endif

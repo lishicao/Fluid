@@ -14,7 +14,6 @@ class face
         face( vector3 , vector3 , vector3 ) ;
         double  get_distance( const particle& ) ;
         vector3 get_normal() ;
-        void    get_equation() ;
 } ;
 
 #endif

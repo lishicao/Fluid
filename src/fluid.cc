@@ -84,10 +84,21 @@ vector3 fluid :: get_acceleration( const particle& P )
     return ( net_force / P.mass ) ;
 }
 
-
+/*
+TODO
+*/
 
 vector3 fluid :: get_pressure( const particle& P )
 {
+    vector3 pressure( 0 , 0 , 0 ) ;
+    vector3 Force ;
+    double r ;
+    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+    {
+        r = get_distance( P , *iter ) ;
+        if( r > h ) continue ;
+    }
+    return pressure ;
 }
 
 
@@ -126,17 +137,51 @@ vector3 fluid :: get_viscosity( const particle& P )
 
 
 /*someting todo*/
-vector3 fluid :: get_external_force( const particle& P )
+vector3 fluid :: get_external_force( particle P )
 {
-    vector3 external_force( 0 , 0 , 0 ) ;
-    vector3 Normal ;
+    vector3 external_force( 0 , 0 , 0 ) , Force ;
+    vector3 Normal , p1 , p2 , point , Nor1 , Nor2 ;
     double  r ;
     for( vector<face> :: iterator iter = objects.begin() ; iter != objects.end() ; iter ++ )
     {
+
         r = (*iter).get_distance( P ) ;
+
+        /*
+         *   if face *iter should push particle P
+         */
         if( r > h ) continue ;
         Normal = (*iter).get_normal() ;
+
+        // obtain a projection of point P on face *iter
+        p1 = P.position + Normal * r ;
+        p2 = P.position - Normal * r ;
+        if( ( (*iter).point1 - p1 ).length() < ( (*iter).point1 - p2 ).length() ) point = p1 ;
+        else point = p2 ;
+
+        // if the projection is in the face *iter (a trangle)
+        Nor1 = ( (*iter).point1 - point ).cross( (*iter).point2 - (*iter).point1 ) ;
+        Nor2 = ( (*iter).point2 - point ).cross( (*iter).point3 - (*iter).point2 ) ;
+        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y || Nor1.z*Nor2.z ) continue ;
+
+        Nor1 = Nor2 ;
+        Nor2 = ( (*iter).point3 - point ).cross( (*iter).point1 - (*iter).point3 ) ;
+        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y || Nor1.z*Nor2.z ) continue ;
+
+        /*
+         *  obtain the pressure
+         */
+        if( ( (*iter).point1 - p1 ).length() < ( (*iter).point1 - p2 ).length() )
+        {
+            Normal.x = -Normal.x ;
+            Normal.y = -Normal.y ;
+            Normal.z = -Normal.z ;
+        }
+        Force = Normal * ( B * ( pow( ( 0.1 / r ) , 7 ) - 1 ) )  ;
+
+        external_force += Force ;
     }
+    external_force += field_force ;
     return external_force ;
 }
 
