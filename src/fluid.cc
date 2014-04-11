@@ -84,19 +84,24 @@ vector3 fluid :: get_acceleration( const particle& P )
     return ( net_force / P.mass ) ;
 }
 
-/*
-TODO
-*/
 
-vector3 fluid :: get_pressure( const particle& P )
+
+vector3 fluid :: get_pressure( particle P )
 {
     vector3 pressure( 0 , 0 , 0 ) ;
-    vector3 Force ;
-    double r ;
+    vector3 Force , direction ;
+    double  W , r , pi , pj ;
+    pi = B * ( pow( ( P.density / stable_density ) , 7 ) - 1 ) ;
     for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
     {
+        direction = P.position - (*iter).position ;
+        direction.normalize() ;
         r = get_distance( P , *iter ) ;
+        pj = B * ( pow( ( (*iter).density / stable_density ) , 7 ) - 1 ) ;
         if( r > h ) continue ;
+        W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
+        Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
+        pressure += Force ;
     }
     return pressure ;
 }

@@ -30,7 +30,7 @@ class fluid
         double   get_distance( const particle& , const particle& ) ;
         double   get_density( particle& ) ;
         vector3  get_acceleration( const particle& ) ;
-        vector3  get_pressure( const particle& ) ;
+        vector3  get_pressure( particle ) ;
         vector3  get_tension( const particle& ) ;
         vector3  get_viscosity( const particle& ) ;
         vector3  get_external_force( particle ) ;
