@@ -13,6 +13,11 @@ fluid :: fluid()
     time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
     h = 1 ;
+    u = 0.2 ;
+    k = 0.2 ;
+    B = 1000 ;
+    stable_density = 1000 ;
+    field_force = vector3( 0 , 0 , 0 ) ;
 }
 
 
@@ -55,7 +60,7 @@ double  fluid :: get_distance( const particle& a , const particle& b )
 
 
 
-double  fluid :: get_density( particle& P )
+double  fluid :: get_density( particle P )
 {
     double density = 0 ;
     double W ;
@@ -129,19 +134,21 @@ vector3 fluid :: get_tension( const particle& P )
 vector3 fluid :: get_viscosity( const particle& P )
 {
 	vector3 viscosity( 0 , 0 , 0 ) ;
+	vector3 Force ;
 	double r , W ;
 	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) W = 0 ;
 		else 		W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
-		viscosity = viscosity + ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
+		Force = ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
+		viscosity = viscosity + Force ;
 	}
 	return viscosity ;
 }
 
 
-/*someting todo*/
+
 vector3 fluid :: get_external_force( particle P )
 {
     vector3 external_force( 0 , 0 , 0 ) , Force ;
@@ -182,7 +189,9 @@ vector3 fluid :: get_external_force( particle P )
             Normal.y = -Normal.y ;
             Normal.z = -Normal.z ;
         }
-        Force = Normal * ( B * ( pow( ( 0.1 / r ) , 7 ) - 1 ) )  ;
+        if( r < 0.1 )
+            Force = Normal * ( B * ( pow( ( 0.1 / r ) , 7 ) - 1 ) )  ;
+        else Force = vector3( 0 , 0 , 0 ) ;
 
         external_force += Force ;
     }

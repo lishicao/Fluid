@@ -28,7 +28,7 @@ class fluid
         void     next_moment() ;
         void     surface_reconstruct() ;
         double   get_distance( const particle& , const particle& ) ;
-        double   get_density( particle& ) ;
+        double   get_density( particle ) ;
         vector3  get_acceleration( const particle& ) ;
         vector3  get_pressure( particle ) ;
         vector3  get_tension( const particle& ) ;

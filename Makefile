@@ -4,7 +4,9 @@ TARGET = bin/a
 
 INCLUDE = -I src/include
 
-CPPFLAGS +=
+CPPFLAGS += -lglut
+CPPFLAGS += -lGLU
+CPPFLAGS += -lGL
 
 CPP = g++
 CPPSOURCES = $(shell find src/ -name "*.cc")
