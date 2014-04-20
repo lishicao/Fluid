@@ -1,6 +1,6 @@
 #include "fluid.hh"
-#include <iostream>
 #include <math.h>
+#include <iostream>
 using namespace std ;
 
 const double PI = 3.1415926 ;
@@ -10,12 +10,12 @@ const double PI = 3.1415926 ;
 fluid :: fluid()
 {
     FPS = 24 ;
-    time = 0 ;
+    Time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
     h = 1 ;
-    u = 0.2 ;
-    k = 0.2 ;
-    B = 1000 ;
+    u = 2 ;
+    k = 2 ;
+    B = 50 ;
     stable_density = 1000 ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
@@ -43,7 +43,7 @@ void  fluid :: next_moment()
         (*iter).position = (*iter).position + (*iter).velocity * time_step ;
         (*iter).velocity = (*iter).velocity + get_acceleration( *iter ) * time_step ;
     }
-    time += time_step ;
+    Time += time_step ;
 }
 
 
@@ -84,8 +84,8 @@ vector3 fluid :: get_acceleration( const particle& P )
     tension        = get_tension( P ) ;
     viscosity      = get_viscosity( P ) ;
     external_force = get_external_force( P ) ;
-    net_force = pressure + tension + viscosity + field_force * P.mass + external_force ;
 
+    net_force = pressure + tension + viscosity + field_force * P.mass + external_force ;
     return ( net_force / P.mass ) ;
 }
 
@@ -104,6 +104,7 @@ vector3 fluid :: get_pressure( particle P )
         r = get_distance( P , *iter ) ;
         pj = B * ( pow( ( (*iter).density / stable_density ) , 7 ) - 1 ) ;
         if( r > h ) continue ;
+        if( r < 0.00001 ) continue ;
         W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
         Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
         pressure += Force ;
@@ -122,12 +123,29 @@ vector3 fluid :: get_tension( const particle& P )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) continue ;
-
+		if( r < 0.00001 ) continue ;
         Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
         tension = tension + Force ;
 	}
 	return tension ;
 }
+/*
+vector3 fluid :: get_tension( const particle& P )
+{
+	vector3 tension( 0 , 0 , 0 ) ;
+	vector3 Force ;
+	double r ;
+	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+	{
+		r = get_distance( P , *iter ) ;
+		if( r > h ) continue ;
+		if( r < 0.00001 ) continue ;
+        Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
+        tension = tension + Force ;
+	}
+	return tension ;
+}*/
+
 
 
 
@@ -139,8 +157,9 @@ vector3 fluid :: get_viscosity( const particle& P )
 	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
 	{
 		r = get_distance( P , *iter ) ;
-		if( r > h ) W = 0 ;
-		else 		W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
+		if( r < 0.00001 ) continue ;
+		if( r > h ) continue ;
+		W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
 		Force = ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
 		viscosity = viscosity + Force ;
 	}
@@ -163,6 +182,7 @@ vector3 fluid :: get_external_force( particle P )
          *   if face *iter should push particle P
          */
         if( r > h ) continue ;
+        if( r < 0.00001 ) continue ;
         Normal = (*iter).get_normal() ;
 
         // obtain a projection of point P on face *iter

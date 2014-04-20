@@ -1,9 +1,12 @@
-#include <iostream>
 #include <string.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include "fluid.hh"
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
 using namespace std ;
 
 void  init() ;
@@ -11,7 +14,7 @@ void  reshape( int , int ) ;
 void  display() ;
 void  Timer( int ) ;
 
-double   FPS ;
+int   	 FPS ;
 fluid    Fluid ;
 particle temp ;
 
@@ -38,13 +41,12 @@ void  Timer( int value )
 
 void  init()
 {
+	//now_time = last_time = time(NULL) ;
     glClearColor( 0 , 0 , 0 , 0 ) ;
-
     FPS = Fluid.FPS ;
-
-    for( int i = 0 ; i < 10 ; i ++ )
-        for( int j = 0 ; j < 10 ; j ++ )
-            for( int k = 0 ; k < 10 ; k ++ )
+    for( int i = 0 ; i < 5 ; i ++ )
+        for( int j = 0 ; j < 5 ; j ++ )
+            for( int k = 0 ; k < 5 ; k ++ )
             {
                 temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
                 temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
@@ -58,7 +60,7 @@ void  reshape( int w , int h )
     glViewport( 0 , 0 , w , h ) ;
     glMatrixMode( GL_PROJECTION ) ;
     glLoadIdentity() ;
-    glFrustum( -10 , 10 , -10 , 10 , 1.5 , 20 ) ;
+    glFrustum( -3 , 3 , -3 , 3 , 0.001 , 100 ) ;
     glMatrixMode( GL_MODELVIEW ) ;
 }
 
@@ -66,9 +68,9 @@ void  display()
 {
     Fluid.next_frame() ;
     glClear( GL_COLOR_BUFFER_BIT ) ;
-    glColor3f( 0 , 0 , 1 ) ;
+    glColor3f( 1 , 1 , 1 ) ;
     glLoadIdentity() ;
-    gluLookAt( 0 , 0 , 2 ,
+    gluLookAt( 0 , 0 , 0.5 ,
                0 , 0 , 0 ,
                0 , 1 , 0
                ) ;
