@@ -1,10 +1,10 @@
 #include "fluid.hh"
 #include <math.h>
 #include <iostream>
+
 using namespace std ;
 
 const double PI = 3.1415926 ;
-
 
 
 fluid :: fluid()
@@ -13,10 +13,10 @@ fluid :: fluid()
     Time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
     h = 1 ;
-    u = 2 ;
+    u = 0.1 ;
     k = 2 ;
-    B = 50 ;
-    stable_density = 1000 ;
+    B = 26 ;
+    stable_density = 70  ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
 
@@ -117,31 +117,37 @@ vector3 fluid :: get_pressure( particle P )
 vector3 fluid :: get_tension( const particle& P )
 {
 	vector3 tension( 0 , 0 , 0 ) ;
-	vector3 Force ;
-	double r ;
+	vector3 Force , direction ;
+	double r , W ;
 	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) continue ;
 		if( r < 0.00001 ) continue ;
-        Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
+		W = 315 * ( pow( ( h * h - r * r ) , 3 ) ) / ( 64 * PI * pow( h , 9 ) )  ;
+		direction = (*iter).position - P.position ;
+		direction.normalize() ;
+        Force = direction * ( P.mass * W * k )  ;
         tension = tension + Force ;
 	}
 	return tension ;
 }
+
 /*
 vector3 fluid :: get_tension( const particle& P )
 {
 	vector3 tension( 0 , 0 , 0 ) ;
-	vector3 Force ;
+	vector3 Force , direction ;
 	double r ;
 	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
 	{
 		r = get_distance( P , *iter ) ;
 		if( r > h ) continue ;
 		if( r < 0.00001 ) continue ;
-        Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
-        tension = tension + Force ;
+		direction = ( (*iter).position - P.position ) ;
+		direction.normalize() ;
+ 	    Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
+    	tension = tension + Force ;
 	}
 	return tension ;
 }*/

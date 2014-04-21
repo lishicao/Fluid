@@ -60,7 +60,7 @@ void  reshape( int w , int h )
     glViewport( 0 , 0 , w , h ) ;
     glMatrixMode( GL_PROJECTION ) ;
     glLoadIdentity() ;
-    glFrustum( -3 , 3 , -3 , 3 , 0.001 , 100 ) ;
+    glFrustum( -1 , 1 , -1 , 1 , 1 , 100 ) ;
     glMatrixMode( GL_MODELVIEW ) ;
 }
 
@@ -70,7 +70,7 @@ void  display()
     glClear( GL_COLOR_BUFFER_BIT ) ;
     glColor3f( 1 , 1 , 1 ) ;
     glLoadIdentity() ;
-    gluLookAt( 0 , 0 , 0.5 ,
+    gluLookAt( 0 , 0 , 5 ,
                0 , 0 , 0 ,
                0 , 1 , 0
                ) ;
@@ -78,6 +78,7 @@ void  display()
     for( vector<particle> :: iterator iter = Fluid.particles.begin() ; iter != Fluid.particles.end() ; iter ++ )
     {
         glVertex3f( (*iter).position.x , (*iter).position.y , (*iter).position.z ) ;
+        cout << (*iter).density << endl ;
     }
     glEnd() ;
     glutSwapBuffers() ;
