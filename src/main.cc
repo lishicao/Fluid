@@ -41,16 +41,21 @@ void  Timer( int value )
 
 void  init()
 {
-	//now_time = last_time = time(NULL) ;
     glClearColor( 0 , 0 , 0 , 0 ) ;
     FPS = Fluid.FPS ;
+    Fluid.field_force = vector3( 0 , -10 , 0 ) ;
+    face obj ;
+    obj.point1 = vector3( 0 , -0.1 , 2 ) ;
+    obj.point2 = vector3( 2 , -0.1 , -2 ) ;
+    obj.point3 = vector3( -2 , -0.1 , -2 ) ;
+    Fluid.objects.push_back( obj ) ;
     for( int i = 0 ; i < 5 ; i ++ )
         for( int j = 0 ; j < 5 ; j ++ )
             for( int k = 0 ; k < 5 ; k ++ )
             {
                 temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
                 temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
-                temp.mass = 1 ;
+                temp.mass = 1.1 ;
                 Fluid.particles.push_back( temp ) ;
             }
 }
@@ -68,9 +73,9 @@ void  display()
 {
     Fluid.next_frame() ;
     glClear( GL_COLOR_BUFFER_BIT ) ;
-    glColor3f( 1 , 1 , 1 ) ;
+    glColor3f( 0 , 0 , 1 ) ;
     glLoadIdentity() ;
-    gluLookAt( 0 , 0 , 5 ,
+    gluLookAt( 0 , 0 , 3 ,
                0 , 0 , 0 ,
                0 , 1 , 0
                ) ;
@@ -78,7 +83,17 @@ void  display()
     for( vector<particle> :: iterator iter = Fluid.particles.begin() ; iter != Fluid.particles.end() ; iter ++ )
     {
         glVertex3f( (*iter).position.x , (*iter).position.y , (*iter).position.z ) ;
-        cout << (*iter).density << endl ;
+        cout << (*iter).position.x << " " << (*iter).position.y << " " << (*iter).position.z << endl ;
+    }
+    glEnd() ;
+    glColor3f( 0 , 1 , 1 ) ;
+    glPolygonMode( GL_FRONT_AND_BACK , GL_LINE ) ;
+    glBegin( GL_POLYGON ) ;
+	for( vector<face> :: iterator iter = Fluid.objects.begin() ; iter != Fluid.objects.end() ; iter ++ )
+    {
+        glVertex3f( (*iter).point1.x , (*iter).point1.y , (*iter).point1.z ) ;
+        glVertex3f( (*iter).point2.x , (*iter).point2.y , (*iter).point2.z ) ;
+        glVertex3f( (*iter).point3.x , (*iter).point3.y , (*iter).point3.z ) ;
     }
     glEnd() ;
     glutSwapBuffers() ;

@@ -13,10 +13,10 @@ fluid :: fluid()
     Time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
     h = 1 ;
-    u = 0.1 ;
-    k = 2 ;
-    B = 26 ;
-    stable_density = 70  ;
+    u = 5 ;
+    k = 0.7 ;
+    B = 1000 ;
+    stable_density = 90  ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
 
@@ -37,7 +37,6 @@ void  fluid :: next_moment()
     {
         (*iter).density = get_density( *iter ) ;
     }
-
     for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).position = (*iter).position + (*iter).velocity * time_step ;
@@ -90,6 +89,27 @@ vector3 fluid :: get_acceleration( const particle& P )
 }
 
 
+/*vector3 fluid :: get_pressure( particle P )
+{
+    vector3 pressure( 0 , 0 , 0 ) ;
+    vector3 Force , direction ;
+    double  W , r , pi , pj ;
+    pi = B * ( pow( ( P.density / stable_density ) , 7 ) - 1 ) ;
+    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+    {
+        direction = P.position - (*iter).position ;
+        direction.normalize() ;
+        r = get_distance( P , *iter ) ;
+        pj = B * ( pow( ( (*iter).density / stable_density ) , 7 ) - 1 ) ;
+        if( r > h ) continue ;
+        if( r < 0.00001 ) continue ;
+        W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
+        Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
+        pressure += Force ;
+    }
+    return pressure ;
+}*/
+
 
 vector3 fluid :: get_pressure( particle P )
 {
@@ -106,7 +126,8 @@ vector3 fluid :: get_pressure( particle P )
         if( r > h ) continue ;
         if( r < 0.00001 ) continue ;
         W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
-        Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
+        //Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
+        Force = direction * ( (*iter).mass * W * ( pi / ( P.density * P.density ) + pj / ( (*iter).density * (*iter).density ) ) ) ;
         pressure += Force ;
     }
     return pressure ;
@@ -150,8 +171,8 @@ vector3 fluid :: get_tension( const particle& P )
     	tension = tension + Force ;
 	}
 	return tension ;
-}*/
-
+}
+*/
 
 
 
@@ -188,7 +209,7 @@ vector3 fluid :: get_external_force( particle P )
          *   if face *iter should push particle P
          */
         if( r > h ) continue ;
-        if( r < 0.00001 ) continue ;
+        if( r < 0.00000001 ) continue ;
         Normal = (*iter).get_normal() ;
 
         // obtain a projection of point P on face *iter
@@ -200,11 +221,11 @@ vector3 fluid :: get_external_force( particle P )
         // if the projection is in the face *iter (a trangle)
         Nor1 = ( (*iter).point1 - point ).cross( (*iter).point2 - (*iter).point1 ) ;
         Nor2 = ( (*iter).point2 - point ).cross( (*iter).point3 - (*iter).point2 ) ;
-        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y || Nor1.z*Nor2.z ) continue ;
+        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y < 0 || Nor1.z*Nor2.z < 0 ) continue ;
 
         Nor1 = Nor2 ;
         Nor2 = ( (*iter).point3 - point ).cross( (*iter).point1 - (*iter).point3 ) ;
-        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y || Nor1.z*Nor2.z ) continue ;
+        if( Nor1.x*Nor2.x < 0 || Nor1.y*Nor2.y < 0 || Nor1.z*Nor2.z < 0 ) continue ;
 
         /*
          *  obtain the pressure
@@ -216,12 +237,12 @@ vector3 fluid :: get_external_force( particle P )
             Normal.z = -Normal.z ;
         }
         if( r < 0.1 )
-            Force = Normal * ( B * ( pow( ( 0.1 / r ) , 7 ) - 1 ) )  ;
-        else Force = vector3( 0 , 0 , 0 ) ;
+          Force = Normal * ( B * ( pow( ( 0.1 / r ) , 7 ) - 1 ) )  ;
+		//Force = Normal * ( B * pow( ( 0.1 / r ) , 7 ) ) ;
+        //else Force = vector3( 0 , 0 , 0 ) ;
 
         external_force += Force ;
     }
-    external_force += field_force ;
     return external_force ;
 }
 
