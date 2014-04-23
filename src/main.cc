@@ -6,9 +6,10 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <fstream>
 
 using namespace std ;
-
+/*
 void  init() ;
 void  reshape( int , int ) ;
 void  display() ;
@@ -45,13 +46,13 @@ void  init()
     FPS = Fluid.FPS ;
     Fluid.field_force = vector3( 0 , -10 , 0 ) ;
     face obj ;
-    obj.point1 = vector3( 0 , -0.1 , 2 ) ;
-    obj.point2 = vector3( 2 , -0.1 , -2 ) ;
-    obj.point3 = vector3( -2 , -0.1 , -2 ) ;
+    obj.point1 = vector3( 0 , -0.5 , 2 ) ;
+    obj.point2 = vector3( 2 , -0.5 , -2 ) ;
+    obj.point3 = vector3( -2 , -0.5 , -2 ) ;
     Fluid.objects.push_back( obj ) ;
-    for( int i = 0 ; i < 5 ; i ++ )
-        for( int j = 0 ; j < 5 ; j ++ )
-            for( int k = 0 ; k < 5 ; k ++ )
+    for( int i = 0 ; i < 6 ; i ++ )
+        for( int j = 0 ; j < 6 ; j ++ )
+            for( int k = 0 ; k < 6 ; k ++ )
             {
                 temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
                 temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
@@ -83,7 +84,6 @@ void  display()
     for( vector<particle> :: iterator iter = Fluid.particles.begin() ; iter != Fluid.particles.end() ; iter ++ )
     {
         glVertex3f( (*iter).position.x , (*iter).position.y , (*iter).position.z ) ;
-        cout << (*iter).position.x << " " << (*iter).position.y << " " << (*iter).position.z << endl ;
     }
     glEnd() ;
     glColor3f( 0 , 1 , 1 ) ;
@@ -97,4 +97,60 @@ void  display()
     }
     glEnd() ;
     glutSwapBuffers() ;
+}
+*/
+
+ofstream fout ;
+
+int  main()
+{
+    string   filename ;
+    fluid    Fluid ;
+    particle temp ;
+    Fluid.field_force = vector3( 0 , -10 , 0 ) ;
+    face obj ;
+
+    obj.point1 = vector3( 0 , -0.5 , 5 ) ;
+    obj.point2 = vector3( 5 , -0.5 , -5 ) ;
+    obj.point3 = vector3( -5 , -0.5 , -5 ) ;
+    Fluid.objects.push_back( obj ) ;
+    for( int i = 0 ; i < 15 ; i ++ )
+        for( int j = 0 ; j < 15 ; j ++ )
+            for( int k = 0 ; k < 15 ; k ++ )
+            {
+                temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
+                temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
+                temp.mass = 1 ;
+                Fluid.particles.push_back( temp ) ;
+            }
+    for( int i = 0 ; i < 60 ; i ++ )
+    {
+        for( int j = 0 ; j < Fluid.FPS ; j ++ )
+        {
+            cout << i << " second  " << j << "'th frame" << endl ;
+            string second , frame ;
+            if( i >= 10 ) {
+                second = ( '0' + i / 10 )  ; 
+                second+= ( '0' + i % 10 ) ; 
+            }
+            else second =  ( '0' + i ) ;
+            if( j >= 10 ) {
+                frame = ( '0' + j / 10 ) ;
+                frame+= ( '0' + j % 10 ) ; 
+            }
+            else frame =  ( '0' + j ) ;
+            filename = "data" ;
+            filename += "/" + second + "." + frame ;
+
+            fout.open( filename.c_str() ) ;
+
+            Fluid.next_frame() ;
+            for( vector<particle>:: iterator iter = Fluid.particles.begin() ; iter != Fluid.particles.end() ; iter ++ )
+            {
+                fout << (*iter).position.x << " " << (*iter).position.y << " " << (*iter).position.z << endl ;
+            }
+            fout.close() ;
+        }
+    }
+    return 0 ;
 }
