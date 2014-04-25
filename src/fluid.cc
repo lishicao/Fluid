@@ -12,11 +12,11 @@ fluid :: fluid()
     FPS = 24 ;
     Time = 0 ;
     time_step = ( 1.0 / FPS ) / 50.0 ;
-    h = 1 ;
-    u = 5 ;
-    k = 1 ;
-    B = 10 ;
-    stable_density = 100  ;
+    h = 0.4 ;
+    u = 0.1 ;
+    k = 0.01 ;
+    B = 1000 ;
+    stable_density = 1000  ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
 
@@ -70,6 +70,7 @@ double  fluid :: get_density( particle P )
         else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * PI * pow( h , 9 ) ) ;
         density += (*iter).mass * W  ;
     }
+    //if(density>200) cout << density << endl ;
     return density ;
 }
 
@@ -126,8 +127,8 @@ vector3 fluid :: get_pressure( particle P )
         if( r > h ) continue ;
         if( r < 0.00001 ) continue ;
         W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
-        Force = direction * ( (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
-        //Force = direction * ( (*iter).mass * W * ( pi / ( P.density * P.density ) + pj / ( (*iter).density * (*iter).density ) ) ) ;
+        //Force = direction * ( - (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
+        Force = direction * ( - (*iter).mass * W * ( pi / ( P.density * P.density ) + pj / ( (*iter).density * (*iter).density ) ) ) ;
         pressure += Force ;
     }
     return pressure ;
