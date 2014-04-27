@@ -44,15 +44,15 @@ void  init()
 {
     glClearColor( 0 , 0 , 0 , 0 ) ;
     FPS = Fluid.FPS ;
-    //Fluid.field_force = vector3( 0 , -10 , 0 ) ;
+    Fluid.field_force = vector3( 0 , -10 , 0 ) ;
     face obj ;
-    obj.point1 = vector3( 0 , -0.5 , 2 ) ;
-    obj.point2 = vector3( 2 , -0.5 , -2 ) ;
-    obj.point3 = vector3( -2 , -0.5 , -2 ) ;
-    //Fluid.objects.push_back( obj ) ;
-    for( int i = 0 ; i < 5 ; i ++ )
-        for( int j = 0 ; j < 5 ; j ++ )
-            for( int k = 0 ; k < 5 ; k ++ )
+    obj.point1 = vector3( 0 , -0.3 , 2 ) ;
+    obj.point2 = vector3( 2 , -0.3 , -2 ) ;
+    obj.point3 = vector3( -2 , -0.3 , -2 ) ;
+    Fluid.objects.push_back( obj ) ;
+    for( int i = 0 ; i < 6 ; i ++ )
+        for( int j = 0 ; j < 6 ; j ++ )
+            for( int k = 0 ; k < 6 ; k ++ )
             {
                 temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
                 temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
@@ -76,7 +76,7 @@ void  display()
     glClear( GL_COLOR_BUFFER_BIT ) ;
     glColor3f( 0 , 0 , 1 ) ;
     glLoadIdentity() ;
-    gluLookAt( 0 , 0 , 3 ,
+    gluLookAt( 2 , 2 , 3 ,
                0 , 0 , 0 ,
                0 , 1 , 0
                ) ;
@@ -86,7 +86,7 @@ void  display()
         glVertex3f( (*iter).position.x , (*iter).position.y , (*iter).position.z ) ;
     }
     glEnd() ;
-    glColor3f( 0 , 1 , 1 ) ;
+    glColor3f( 1 , 1 , 1 ) ;
     glPolygonMode( GL_FRONT_AND_BACK , GL_LINE ) ;
     glBegin( GL_POLYGON ) ;
 	for( vector<face> :: iterator iter = Fluid.objects.begin() ; iter != Fluid.objects.end() ; iter ++ )
