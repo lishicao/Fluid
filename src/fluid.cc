@@ -9,9 +9,9 @@ const double PI = 3.1415926 ;
 
 fluid :: fluid()
 {
-    FPS = 24 ;
+    FPS = 20 ;
     Time = 0 ;
-    time_step = ( 1.0 / FPS ) / 50.0 ;
+    time_step = ( 1.0 / FPS ) / 30.0 ;
     h = 0.3 ;
     u = 0.1 ;
     k = 0.01 ;
@@ -24,7 +24,7 @@ fluid :: fluid()
 
 void  fluid :: next_frame()
 {
-    for( int i = 0 ; i < 50 ; i ++ )
+    for( int i = 0 ; i < 30 ; i ++ )
         next_moment() ;
     surface_reconstruct() ;
 }
@@ -33,11 +33,36 @@ void  fluid :: next_frame()
 
 void  fluid :: next_moment()
 {
-    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++iter )
+    int  number , x , y , z ;
+    for( int i = 0 ; i < 1000 ; i ++ )
+    {
+        if( cube[i].empty() ) continue ;
+        //for( vector<int> :: iterator iter = cube[i].begin() ; iter != cube[i].end() ; ++ iter )
+        //    delete iter ;
+        //cube[i].clear() ;
+        //cube[i].resize( 0 ) ;
+        while( !cube[i].empty() ) cube[i].pop_front() ;
+        cube[i].clear() ;
+    }
+
+    for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
+    {    
+        x = int( (*iter).position.x / h ) % 10 ;
+        y = int( (*iter).position.y / h ) % 10 ;
+        z = int( (*iter).position.z / h ) % 10 ;
+        if( x < 0 ) x += 10 ;
+        if( y < 0 ) y += 10 ;
+        if( z < 0 ) z += 10 ;
+        number = x + y * 10 + z * 100 ;
+        cout << number << endl ;
+        cube[number].push_back( iter - particles.begin() ) ;
+    }
+
+    for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).density = get_density( *iter ) ;
     }
-    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
+    for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).position = (*iter).position + (*iter).velocity * time_step ;
         (*iter).velocity = (*iter).velocity + get_acceleration( *iter ) * time_step ;
@@ -89,28 +114,6 @@ vector3 fluid :: get_acceleration( const particle& P )
 }
 
 
-/*vector3 fluid :: get_pressure( particle P )
-{
-    vector3 pressure( 0 , 0 , 0 ) ;
-    vector3 Force , direction ;
-    double  W , r , pi , pj ;
-    pi = B * ( pow( ( P.density / stable_density ) , 7 ) - 1 ) ;
-    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
-    {
-        direction = P.position - (*iter).position ;
-        direction.normalize() ;
-        r = get_distance( P , *iter ) ;
-        pj = B * ( pow( ( (*iter).density / stable_density ) , 7 ) - 1 ) ;
-        if( r > h ) continue ;
-        if( r < 0.00001 ) continue ;
-        W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
-        Force = direction * ( - (*iter).mass * ( pi + pj ) * W / ( 2 * (*iter).density ) ) ;
-        pressure += Force ;
-    }
-    return pressure ;
-}*/
-
-
 vector3 fluid :: get_pressure( particle P )
 {
     vector3 pressure( 0 , 0 , 0 ) ;
@@ -152,26 +155,6 @@ vector3 fluid :: get_tension( const particle& P )
 	}
 	return tension ;
 }
-
-/*
-vector3 fluid :: get_tension( const particle& P )
-{
-	vector3 tension( 0 , 0 , 0 ) ;
-	vector3 Force , direction ;
-	double r ;
-	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
-	{
-		r = get_distance( P , *iter ) ;
-		if( r > h ) continue ;
-		if( r < 0.00001 ) continue ;
-		direction = ( (*iter).position - P.position ) ;
-		direction.normalize() ;
- 	    Force = ( (*iter).position - P.position ) * ( k * cos( PI * r / ( 2 * h ) ) / r ) ;
-    	tension = tension + Force ;
-	}
-	return tension ;
-}
-*/
 
 
 

@@ -2,6 +2,7 @@
 #define FLUID_HH_INCLUDED
 
 #include <vector>
+#include <list>
 #include "particle.hh"
 #include "face.hh"
 
@@ -13,6 +14,8 @@ class fluid
 		vector < particle > particles ;		// particles are particle in fluid
 		vector < face > objects ;			// objects are mesh of solid
         vector < face > surface ;			// surface is mesh of fluid
+        //vector < int  > cube[1000] ;        /
+        list<int> cube[1000] ;
 
         vector3 field_force ;
 
@@ -25,6 +28,7 @@ class fluid
         fluid() ;
 		void     next_frame() ;
     private :
+        void     make_cube() ;
         void     next_moment() ;
         void     surface_reconstruct() ;
         double   get_distance( const particle& , const particle& ) ;

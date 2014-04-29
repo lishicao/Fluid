@@ -46,12 +46,12 @@ void  init()
     FPS = Fluid.FPS ;
     Fluid.field_force = vector3( 0 , -10 , 0 ) ;
     face obj ;
-    obj.point1 = vector3( 0 , -0.3 , 2 ) ;
-    obj.point2 = vector3( 2 , -0.3 , -2 ) ;
-    obj.point3 = vector3( -2 , -0.3 , -2 ) ;
+    obj.point1 = vector3( 0 , -2 , 2 ) ;
+    obj.point2 = vector3( 2 , -2 , -2 ) ;
+    obj.point3 = vector3( -2 , -2 , -2 ) ;
     Fluid.objects.push_back( obj ) ;
     for( int i = 0 ; i < 6 ; i ++ )
-        for( int j = 0 ; j < 6 ; j ++ )
+        for( int j = 0 ; j <6  ; j ++ )
             for( int k = 0 ; k < 6 ; k ++ )
             {
                 temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
