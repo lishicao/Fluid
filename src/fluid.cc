@@ -11,12 +11,12 @@ fluid :: fluid()
 {
     FPS = 20 ;
     Time = 0 ;
-    time_step = ( 1.0 / FPS ) / 30.0 ;
+    time_step = ( 1.0 / FPS ) / 50.0 ;
     h = 0.3 ;
     u = 0.1 ;
-    k = 0.01 ;
-    B = 500 ;
-    stable_density = 1000  ;
+    k = 0.05 ;
+    B = 400 ;
+    stable_density = 600  ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
 
@@ -24,7 +24,7 @@ fluid :: fluid()
 
 void  fluid :: next_frame()
 {
-    for( int i = 0 ; i < 30 ; i ++ )
+    for( int i = 0 ; i < 3 ; i ++ )
         next_moment() ;
     surface_reconstruct() ;
 }
@@ -37,16 +37,11 @@ void  fluid :: next_moment()
     for( int i = 0 ; i < 1000 ; i ++ )
     {
         if( cube[i].empty() ) continue ;
-        //for( vector<int> :: iterator iter = cube[i].begin() ; iter != cube[i].end() ; ++ iter )
-        //    delete iter ;
-        //cube[i].clear() ;
-        //cube[i].resize( 0 ) ;
         while( !cube[i].empty() ) cube[i].pop_front() ;
-        cube[i].clear() ;
     }
 
     for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
-    {    
+    {
         x = int( (*iter).position.x / h ) % 10 ;
         y = int( (*iter).position.y / h ) % 10 ;
         z = int( (*iter).position.z / h ) % 10 ;
@@ -54,7 +49,6 @@ void  fluid :: next_moment()
         if( y < 0 ) y += 10 ;
         if( z < 0 ) z += 10 ;
         number = x + y * 10 + z * 100 ;
-        cout << number << endl ;
         cube[number].push_back( iter - particles.begin() ) ;
     }
 
@@ -62,11 +56,13 @@ void  fluid :: next_moment()
     {
         (*iter).density = get_density( *iter ) ;
     }
+
     for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).position = (*iter).position + (*iter).velocity * time_step ;
         (*iter).velocity = (*iter).velocity + get_acceleration( *iter ) * time_step ;
     }
+
     Time += time_step ;
 }
 
@@ -83,23 +79,6 @@ double  fluid :: get_distance( const particle& a , const particle& b )
 }
 
 
-
-double  fluid :: get_density( particle P )
-{
-    double density = 0 ;
-    double W ;
-    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++iter )
-    {
-        double r = get_distance( P , *iter ) ;
-        if( r > h ) W = 0 ;
-        else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * PI * pow( h , 9 ) ) ;
-        density += (*iter).mass * W  ;
-    }
-    return density ;
-}
-
-
-
 vector3 fluid :: get_acceleration( const particle& P )
 {
     vector3 net_force , pressure , tension , viscosity , external_force ;
@@ -114,7 +93,61 @@ vector3 fluid :: get_acceleration( const particle& P )
 }
 
 
-vector3 fluid :: get_pressure( particle P )
+/*double  fluid :: get_density( particle P )
+{
+    double density = 0 ;
+    double W ;
+    for( vector<particle> :: iterator iter = particles.begin() ; iter != particles.end() ; ++iter )
+    {
+        double r = get_distance( P , *iter ) ;
+        if( r > h ) W = 0 ;
+        else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * PI * pow( h , 9 ) ) ;
+        density += (*iter).mass * W  ;
+    }
+    return density ;
+}*/
+
+
+double  fluid :: get_density( particle P )
+{
+    double density = 0 ;
+    double W ;
+    int  number[27] , x , y , z , Count = 0 , X , Y , Z ;
+	x = int( P.position.x / h ) % 10 ;
+	y = int( P.position.y / h ) % 10 ;
+	z = int( P.position.z / h ) % 10 ;
+	if( x < 0 ) x += 10 ;
+	if( y < 0 ) y += 10 ;
+	if( z < 0 ) z += 10 ;
+	for( int i = x - 1 ; i != x + 2 ; ++ i )
+		for( int j = y - 1 ; j != y + 2 ; ++ j )
+			for( int k = z - 1 ; k != z + 2 ; ++ k )
+			{
+				X = i , Y = j , Z = k ;
+				if( X < 0 )   X += 10 ;	if( X >= 10 ) X %= 10 ;
+				if( Y < 0 )   Y += 10 ;	if( Y >= 10 ) Y %= 10 ;
+				if( Z < 0 )   Z += 10 ;	if( Z >= 10 ) Z %= 10 ;
+				number[Count] = X + Y * 10 + Z * 100 ;
+				Count ++ ;
+			}
+
+	for( int i = 0 ; i != 27 ; ++ i )
+	{
+		for( list<int> :: iterator iter = cube[number[i]].begin() ; iter != cube[number[i]].end() ; ++ iter )
+		{
+			double r = get_distance( P , *( particles.begin() + (*iter) ) ) ;
+			if( r > h ) W = 0 ;
+			else        W = 315 * pow( ( h * h - r * r ) , 3 ) / ( 64 * PI * pow( h , 9 ) ) ;
+			density += ( *( particles.begin() + (*iter) ) ).mass * W  ;
+		}
+	}
+
+    return density ;
+}
+
+
+
+/*vector3 fluid :: get_pressure( particle P )
 {
     vector3 pressure( 0 , 0 , 0 ) ;
     vector3 Force , direction ;
@@ -133,6 +166,50 @@ vector3 fluid :: get_pressure( particle P )
         pressure += Force ;
     }
     return pressure ;
+}*/
+
+vector3 fluid :: get_pressure( particle P )
+{
+    vector3 pressure( 0 , 0 , 0 ) ;
+    vector3 Force , direction ;
+    double  W , r , pi , pj ;
+
+    int  number[27] , x , y , z , Count = 0 , X , Y , Z ;
+	x = int( P.position.x / h ) % 10 ;
+	y = int( P.position.y / h ) % 10 ;
+	z = int( P.position.z / h ) % 10 ;
+	if( x < 0 ) x += 10 ;
+	if( y < 0 ) y += 10 ;
+	if( z < 0 ) z += 10 ;
+	for( int i = x - 1 ; i != x + 2 ; ++ i )
+		for( int j = y - 1 ; j != y + 2 ; ++ j )
+			for( int k = z - 1 ; k != z + 2 ; ++ k )
+			{
+				X = i , Y = j , Z = k ;
+				if( X < 0 )   X += 10 ;	if( X >= 10 ) X %= 10 ;
+				if( Y < 0 )   Y += 10 ;	if( Y >= 10 ) Y %= 10 ;
+				if( Z < 0 )   Z += 10 ;	if( Z >= 10 ) Z %= 10 ;
+				number[Count] = X + Y * 10 + Z * 100 ;
+				Count ++ ;
+			}
+
+    pi = B * ( pow( ( P.density / stable_density ) , 7 ) - 1 ) ;
+	for( int i = 0 ; i != 27 ; ++ i )
+	{
+		for( list<int> :: iterator iter = cube[number[i]].begin() ; iter != cube[number[i]].end() ; ++ iter )
+		{
+			direction = P.position - (*( particles.begin() + (*iter) ) ).position ;
+			direction.normalize() ;
+			r = get_distance( P , *( particles.begin() + (*iter) ) ) ;
+			pj = B * ( pow( ( (*( particles.begin() + (*iter) )).density / stable_density ) , 7 ) - 1 ) ;
+			if( r > h ) continue ;
+			if( r < 0.00001 ) continue ;
+			W = ( -45 * ( h - r ) * ( h - r ) ) / ( PI * pow( h , 6 ) ) ;
+			Force = direction * ( - (*( particles.begin() + (*iter) )).mass * W * ( pi / ( P.density * P.density ) + pj / ( (*( particles.begin() + (*iter) )).density * (*( particles.begin() + (*iter) )).density ) ) ) ;
+			pressure += Force ;
+        }
+    }
+    return pressure ;
 }
 
 
@@ -142,16 +219,39 @@ vector3 fluid :: get_tension( const particle& P )
 	vector3 tension( 0 , 0 , 0 ) ;
 	vector3 Force , direction ;
 	double r , W ;
-	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+
+    int  number[27] , x , y , z , Count = 0 , X , Y , Z ;
+	x = int( P.position.x / h ) % 10 ;
+	y = int( P.position.y / h ) % 10 ;
+	z = int( P.position.z / h ) % 10 ;
+	if( x < 0 ) x += 10 ;
+	if( y < 0 ) y += 10 ;
+	if( z < 0 ) z += 10 ;
+	for( int i = x - 1 ; i != x + 2 ; ++ i )
+		for( int j = y - 1 ; j != y + 2 ; ++ j )
+			for( int k = z - 1 ; k != z + 2 ; ++ k )
+			{
+				X = i , Y = j , Z = k ;
+				if( X < 0 )   X += 10 ;	if( X >= 10 ) X %= 10 ;
+				if( Y < 0 )   Y += 10 ;	if( Y >= 10 ) Y %= 10 ;
+				if( Z < 0 )   Z += 10 ;	if( Z >= 10 ) Z %= 10 ;
+				number[Count] = X + Y * 10 + Z * 100 ;
+				Count ++ ;
+			}
+
+	for( int i = 0 ; i != 27 ; ++ i )
 	{
-		r = get_distance( P , *iter ) ;
-		if( r > h ) continue ;
-		if( r < 0.00001 ) continue ;
-		W = 315 * ( pow( ( h * h - r * r ) , 3 ) ) / ( 64 * PI * pow( h , 9 ) )  ;
-		direction = (*iter).position - P.position ;
-		direction.normalize() ;
-        Force = direction * ( P.mass * W * k )  ;
-        tension = tension + Force ;
+		for( list<int> :: iterator iter = cube[number[i]].begin() ; iter != cube[number[i]].end() ; ++ iter )
+		{
+			r = get_distance( P , *( particles.begin() + (*iter) ) ) ;
+			if( r > h ) continue ;
+			if( r < 0.00001 ) continue ;
+			W = 315 * ( pow( ( h * h - r * r ) , 3 ) ) / ( 64 * PI * pow( h , 9 ) )  ;
+			direction = (*( particles.begin() + (*iter) )).position - P.position ;
+			direction.normalize() ;
+			Force = direction * ( P.mass * W * k )  ;
+			tension = tension + Force ;
+        }
 	}
 	return tension ;
 }
@@ -163,14 +263,37 @@ vector3 fluid :: get_viscosity( const particle& P )
 	vector3 viscosity( 0 , 0 , 0 ) ;
 	vector3 Force ;
 	double r , W ;
-	for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; iter ++ )
+
+    int  number[27] , x , y , z , Count = 0 , X , Y , Z ;
+	x = int( P.position.x / h ) % 10 ;
+	y = int( P.position.y / h ) % 10 ;
+	z = int( P.position.z / h ) % 10 ;
+	if( x < 0 ) x += 10 ;
+	if( y < 0 ) y += 10 ;
+	if( z < 0 ) z += 10 ;
+	for( int i = x - 1 ; i != x + 2 ; ++ i )
+		for( int j = y - 1 ; j != y + 2 ; ++ j )
+			for( int k = z - 1 ; k != z + 2 ; ++ k )
+			{
+				X = i , Y = j , Z = k ;
+				if( X < 0 )   X += 10 ;	if( X >= 10 ) X %= 10 ;
+				if( Y < 0 )   Y += 10 ;	if( Y >= 10 ) Y %= 10 ;
+				if( Z < 0 )   Z += 10 ;	if( Z >= 10 ) Z %= 10 ;
+				number[Count] = X + Y * 10 + Z * 100 ;
+				Count ++ ;
+			}
+
+	for( int i = 0 ; i != 27 ; ++ i )
 	{
-		r = get_distance( P , *iter ) ;
-		if( r < 0.00001 ) continue ;
-		if( r > h ) continue ;
-		W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
-		Force = ( (*iter).velocity - P.velocity ) * u * P.mass * W / P.density ;
-		viscosity = viscosity + Force ;
+		for( list<int> :: iterator iter = cube[number[i]].begin() ; iter != cube[number[i]].end() ; ++ iter )
+		{
+			r = get_distance( P , *( particles.begin() + (*iter) ) ) ;
+			if( r < 0.00001 ) continue ;
+			if( r > h ) continue ;
+			W = 45 * ( h - r ) / ( PI * pow( h , 6 ) ) ;
+			Force = ( (*( particles.begin() + (*iter) )).velocity - P.velocity ) * u * P.mass * W / P.density ;
+			viscosity = viscosity + Force ;
+		}
 	}
 	return viscosity ;
 }

@@ -14,7 +14,7 @@ class fluid
 		vector < particle > particles ;		// particles are particle in fluid
 		vector < face > objects ;			// objects are mesh of solid
         vector < face > surface ;			// surface is mesh of fluid
-        //vector < int  > cube[1000] ;        /
+        //vector < int  > cube[1000] ;
         list<int> cube[1000] ;
 
         vector3 field_force ;
