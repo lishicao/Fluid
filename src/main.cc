@@ -14,6 +14,7 @@ void  init() ;
 void  reshape( int , int ) ;
 void  display() ;
 void  Timer( int ) ;
+void  build_scene() ;
 
 int   	 FPS ;
 fluid    Fluid ;
@@ -44,17 +45,21 @@ void  init()
 {
     glClearColor( 0 , 0 , 0 , 0 ) ;
     FPS = Fluid.FPS ;
-    Fluid.field_force = vector3( 0 , -10 , 0 ) ;
-    face obj ;
-    obj.point1 = vector3( 0 , -2 , 4 ) ;
-    obj.point2 = vector3( 4 , -2 , -4 ) ;
-    obj.point3 = vector3( -4 , -2 , -4 ) ;
-    Fluid.objects.push_back( obj ) ;
-    for( int i = 0 ; i < 15 ; i ++ )
+    build_scene() ;
+    for( int i = -4 ; i < 4 ; i ++ )
         for( int j = 0 ; j < 15  ; j ++ )
-            for( int k = 0 ; k < 15 ; k ++ )
+            for( int k = -4 ; k < 4 ; k ++ )
             {
-                temp.position.x = i/8.0 ; temp.position.y = j/8.0 ; temp.position.z = k/8.0 ;
+                temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
+                temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
+                temp.mass = 1 ;
+                Fluid.particles.push_back( temp ) ;
+            }
+    for( int i = -4 ; i < 4 ; i ++ )
+        for( int j = 20 ; j < 35  ; j ++ )
+            for( int k = -4 ; k < 4 ; k ++ )
+            {
+                temp.position.x = i/10.0 ; temp.position.y = j/10.0 ; temp.position.z = k/10.0 ;
                 temp.velocity.x = 0 ; temp.velocity.y = 0 ; temp.velocity.z = 0 ;
                 temp.mass = 1 ;
                 Fluid.particles.push_back( temp ) ;
@@ -76,7 +81,7 @@ void  display()
     glClear( GL_COLOR_BUFFER_BIT ) ;
     glColor3f( 0 , 0 , 1 ) ;
     glLoadIdentity() ;
-    gluLookAt( 2 , 2 , 3 ,
+    gluLookAt( 0 , 0 , 3 ,
                0 , 0 , 0 ,
                0 , 1 , 0
                ) ;
@@ -86,17 +91,72 @@ void  display()
         glVertex3f( (*iter).position.x , (*iter).position.y , (*iter).position.z ) ;
     }
     glEnd() ;
-    glColor3f( 1 , 1 , 1 ) ;
+    /*glColor3f( 1 , 1 , 1 ) ;
     glPolygonMode( GL_FRONT_AND_BACK , GL_LINE ) ;
-    glBegin( GL_POLYGON ) ;
+    glBegin( GL_TRIANGLES) ;
 	for( vector<face> :: iterator iter = Fluid.objects.begin() ; iter != Fluid.objects.end() ; iter ++ )
     {
         glVertex3f( (*iter).point1.x , (*iter).point1.y , (*iter).point1.z ) ;
         glVertex3f( (*iter).point2.x , (*iter).point2.y , (*iter).point2.z ) ;
         glVertex3f( (*iter).point3.x , (*iter).point3.y , (*iter).point3.z ) ;
     }
-    glEnd() ;
+    glEnd() ;*/
     glutSwapBuffers() ;
+}
+
+void  build_scene()
+{
+    Fluid.field_force = vector3( 0 , -10 , 0 ) ;
+    face obj ;
+    obj.point1 = vector3( 0.9 , -2 , -0.9 ) ;
+    obj.point2 = vector3( 0.9 , -2 , 0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( 0.9 , -2 , -0.9 ) ;
+    obj.point2 = vector3( -0.9 , -2 , -0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( 0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( 0.9 , -2 , 0.9 ) ;
+    obj.point3 = vector3( 0.9 , -1 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( 0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( 0.9 , -2 , -0.9 ) ;
+    obj.point3 = vector3( 0.9 , -2 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( 0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( 0.9 , -2 , -0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , -0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( 0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( -0.9 , -1 , -0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , -0.9 ) ;
+    Fluid.objects.push_back( obj ) ;    
+
+    obj.point1 = vector3( -0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( -0.9 , -2 , -0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( -0.9 , -1 , -0.9 ) ;
+    obj.point2 = vector3( -0.9 , -1 , 0.9 ) ;
+    obj.point3 = vector3( -0.9 , -2 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;
+
+    obj.point1 = vector3( -0.9 , -2 , 0.9 ) ;
+    obj.point2 = vector3( 0.9 , -2 , 0.9 ) ;
+    obj.point3 = vector3( 0.9 , -1 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;   
+
+    obj.point1 = vector3( -0.9 , -2 , 0.9 ) ;
+    obj.point2 = vector3( -0.9 , -1 , 0.9 ) ;
+    obj.point3 = vector3( 0.9 , -1 , 0.9 ) ;
+    Fluid.objects.push_back( obj ) ;          
 }
 
 /*
@@ -110,9 +170,9 @@ int  main()
     Fluid.field_force = vector3( 0 , -10 , 0 ) ;
     face obj ;
 
-    obj.point1 = vector3( 0 , -0.5 , 5 ) ;
-    obj.point2 = vector3( 5 , -0.5 , -5 ) ;
-    obj.point3 = vector3( -5 , -0.5 , -5 ) ;
+    obj.point1 = vector3( 0 , -0.9 , 5 ) ;
+    obj.point2 = vector3( 5 , -0.9 , -5 ) ;
+    obj.point3 = vector3( -5 , -0.9 , -5 ) ;
     Fluid.objects.push_back( obj ) ;
     for( int i = 0 ; i < 15 ; i ++ )
         for( int j = 0 ; j < 15 ; j ++ )

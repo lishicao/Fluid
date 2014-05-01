@@ -11,12 +11,12 @@ fluid :: fluid()
 {
     FPS = 20 ;
     Time = 0 ;
-    time_step = ( 1.0 / FPS ) / 50.0 ;
-    h = 0.3 ;
-    u = 0.1 ;
-    k = 0.05 ;
-    B = 400 ;
-    stable_density = 600  ;
+    time_step = ( 1.0 / FPS ) / 30.0 ;
+    h = 0.2 ;
+    u = 0.08 ;
+    k = 0.01 ;
+    B = 800 ;
+    stable_density = 1000  ;
     field_force = vector3( 0 , 0 , 0 ) ;
 }
 
@@ -34,6 +34,7 @@ void  fluid :: next_frame()
 void  fluid :: next_moment()
 {
     int  number , x , y , z ;
+    double D = 0 ;
     for( int i = 0 ; i < 1000 ; i ++ )
     {
         if( cube[i].empty() ) continue ;
@@ -55,6 +56,7 @@ void  fluid :: next_moment()
     for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
     {
         (*iter).density = get_density( *iter ) ;
+        D += (*iter).density ;
     }
 
     for( vector< particle > :: iterator iter = particles.begin() ; iter != particles.end() ; ++ iter )
